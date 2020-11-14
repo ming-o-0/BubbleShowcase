@@ -30,12 +30,17 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
   final StreamController<int> slideNumberConroller = StreamController();
   final StreamController<SlideControllerAction> slideActionConroller =
       StreamController();
+  final StreamController<bool> showLastWidgetController =
+      StreamController.broadcast();
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.bodyText1.copyWith(
           color: Colors.white,
         );
+    showLastWidgetController.stream.listen((event) {
+      print('event: $event');
+    });
     return BubbleShowcase(
       bubbleShowcaseId: 'my_bubble_showcase',
       bubbleShowcaseVersion: 1,
@@ -46,7 +51,11 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
       ],
       slideNumberStream: slideNumberConroller.stream,
       slideActionStream: slideActionConroller.stream,
-      child: _BubbleShowcaseDemoChild(_titleKey, _firstButtonKey),
+      child: _BubbleShowcaseDemoChild(
+        _titleKey,
+        _firstButtonKey,
+        showLastWidgetController.stream,
+      ),
       counterText: null,
       showCloseButton: false,
       enabledNextOnClickOverlay: true,
@@ -93,6 +102,7 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
                               child: RaisedButton(
                                 child: Text('Next'),
                                 onPressed: () {
+                                  showLastWidgetController.sink.add(true);
                                   slideNumberConroller.add(1);
                                 },
                               ),
@@ -226,49 +236,93 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
       );
 }
 
-/// The main demo widget child.
-class _BubbleShowcaseDemoChild extends StatelessWidget {
+class _BubbleShowcaseDemoChild extends StatefulWidget {
   /// The title text global key.
   final GlobalKey _titleKey;
 
   /// The first button global key.
   final GlobalKey _firstButtonKey;
 
+  /// Whether to show last widget
+  final Stream<bool> showLastWidgetStream;
+
   /// Creates a new bubble showcase demo child instance.
-  _BubbleShowcaseDemoChild(this._titleKey, this._firstButtonKey);
+  _BubbleShowcaseDemoChild(
+    this._titleKey,
+    this._firstButtonKey,
+    this.showLastWidgetStream,
+  );
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 40,
-          horizontal: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              child: Text(
-                'Bubble Showcase',
-                key: _titleKey,
-                style: Theme.of(context).textTheme.display1,
-                textAlign: TextAlign.center,
-              ),
-              width: MediaQuery.of(context).size.width,
+  _BubbleShowcaseDemoChildState createState() =>
+      _BubbleShowcaseDemoChildState();
+}
+
+/// The main demo widget child.
+class _BubbleShowcaseDemoChildState extends State<_BubbleShowcaseDemoChild> {
+  @override
+  Widget build(BuildContext context) {
+    widget.showLastWidgetStream.listen((event) {
+      print('inside event: $event');
+    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 40,
+        horizontal: 20,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            child: Text(
+              'Bubble Showcase',
+              key: widget._titleKey,
+              style: Theme.of(context).textTheme.display1,
+              textAlign: TextAlign.center,
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: RaisedButton(
-                child: const Text('This button is NEW !'),
-                key: _firstButtonKey,
-                onPressed: () {},
-              ),
-            ),
-            RaisedButton(
-              child: const Text(
-                  'This button is old, please don\'t pay attention.'),
+            width: MediaQuery.of(context).size.width,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: RaisedButton(
+              child: const Text('This button is NEW !'),
+              key: widget._firstButtonKey,
               onPressed: () {},
             ),
-          ],
-        ),
-      );
+          ),
+          RaisedButton(
+            child:
+                const Text('This button is old, please don\'t pay attention.'),
+            onPressed: () {},
+          ),
+          StreamBuilder<bool>(
+            stream: widget.showLastWidgetStream,
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+              return Text(snapshot.data.toString());
+              // return snapshot.data != null && snapshot.data
+              //     ? Column(
+              //         children: [
+              //           Container(
+              //             width: 20,
+              //             height: 20,
+              //             decoration: BoxDecoration(color: Colors.amber),
+              //             child: Text(snapshot.data.toString()),
+              //           ),
+              //           Container(
+              //             width: 20,
+              //             height: 20,
+              //             decoration: BoxDecoration(color: Colors.cyan),
+              //             child: Text(snapshot.data.toString()),
+              //           ),
+              //         ],
+              //       )
+              //     : Container(
+              //         child: Text(snapshot.data.toString()),
+              //       );
+            },
+          )
+        ],
+      ),
+    );
+  }
 }
