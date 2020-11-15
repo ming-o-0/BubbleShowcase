@@ -105,6 +105,10 @@ abstract class BubbleSlide {
 class RelativeBubbleSlide extends BubbleSlide {
   /// The widget key.
   final GlobalKey widgetKey;
+  final double extraHeightTop;
+  final double extraHeightBottom;
+  final double extraWidthRight;
+  final double extraWidthLeft;
 
   /// Creates a new relative bubble slide instance.
   const RelativeBubbleSlide({
@@ -116,6 +120,10 @@ class RelativeBubbleSlide extends BubbleSlide {
     ),
     BubbleSlideChild child,
     @required this.widgetKey,
+    this.extraHeightTop = 0.0,
+    this.extraHeightBottom = 0.0,
+    this.extraWidthRight = 0.0,
+    this.extraWidthLeft = 0.0,
   }) : super(
           shape: shape,
           boxShadow: boxShadow,
@@ -130,10 +138,10 @@ class RelativeBubbleSlide extends BubbleSlide {
     Offset offset = renderBox.localToGlobal(Offset.zero);
 
     return Position(
-      top: offset.dy,
-      right: offset.dx + renderBox.size.width,
-      bottom: offset.dy + renderBox.size.height,
-      left: offset.dx,
+      top: offset.dy - extraHeightTop,
+      right: offset.dx + renderBox.size.width + extraWidthRight,
+      bottom: offset.dy + renderBox.size.height + extraHeightBottom,
+      left: offset.dx - extraWidthLeft,
     );
   }
 }

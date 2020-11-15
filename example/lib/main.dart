@@ -56,6 +56,8 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
   /// Creates the first slide.
   BubbleSlide _firstSlide(TextStyle textStyle) => RelativeBubbleSlide(
         widgetKey: _titleKey,
+        extraHeightTop: 10.0,
+        extraWidthRight: 10.0,
         child: RelativeBubbleSlideChild(
           widget: Padding(
             padding: const EdgeInsets.only(top: 8),
