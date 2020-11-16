@@ -50,6 +50,7 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
       counterText: null,
       showCloseButton: false,
       enabledClickOnOverlayToNextSlide: false,
+      doNotReopenOnClose: false,
     );
   }
 
@@ -95,7 +96,12 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
                               child: RaisedButton(
                                 child: Text('Next'),
                                 onPressed: () {
-                                  slideNumberConroller.add(1);
+                                  slideActionConroller
+                                      .add(SlideControllerAction.hide);
+                                  Future.delayed(
+                                    const Duration(milliseconds: 1000),
+                                    () => {slideNumberConroller.add(1)},
+                                  );
                                 },
                               ),
                             ),
