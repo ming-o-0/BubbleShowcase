@@ -10,6 +10,7 @@ enum SlideControllerAction {
   next,
   previous,
   close,
+  hide,
 }
 
 /// The BubbleShowcase main widget.
@@ -177,7 +178,7 @@ class _BubbleShowcaseState extends State<BubbleShowcase>
     }
 
     _currentSlideIndex = position;
-    _currentSlideEntry.remove();
+    _currentSlideEntry?.remove();
 
     if (_isFinished) {
       _currentSlideEntry = null;
@@ -194,6 +195,12 @@ class _BubbleShowcaseState extends State<BubbleShowcase>
     }
   }
 
+  void _hideSlide() {
+    _currentSlideEntry.remove();
+    _currentSlideEntry = null;
+    return;
+  }
+
   void _slideActionHandler(SlideControllerAction action) {
     switch (action) {
       case SlideControllerAction.next:
@@ -208,6 +215,9 @@ class _BubbleShowcaseState extends State<BubbleShowcase>
         break;
       case SlideControllerAction.close:
         _goToNextEntryOrClose(-1);
+        break;
+      case SlideControllerAction.hide:
+        _hideSlide();
         break;
     }
   }
