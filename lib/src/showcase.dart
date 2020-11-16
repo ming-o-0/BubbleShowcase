@@ -45,6 +45,9 @@ class BubbleShowcase extends StatefulWidget {
   /// Trigger to control slide
   final Stream<SlideControllerAction> slideActionStream;
 
+  // Duration by which delay showcase initialization.
+  final Duration initialDelay;
+
   /// Creates a new bubble showcase instance.
   BubbleShowcase({
     @required this.bubbleShowcaseId,
@@ -57,6 +60,7 @@ class BubbleShowcase extends StatefulWidget {
     this.enabledClickOnOverlayToNextSlide = true,
     this.slideNumberStream,
     this.slideActionStream,
+    this.initialDelay = Duration.zero,
   }) : assert(bubbleSlides.isNotEmpty);
 
   @override
@@ -92,6 +96,7 @@ class _BubbleShowcaseState extends State<BubbleShowcase>
       if (await widget.shouldOpenShowcase) {
         _currentSlideIndex++;
         _currentSlideEntry = _createCurrentSlideEntry();
+        await Future.delayed(widget.initialDelay);
         Overlay.of(context).insert(_currentSlideEntry);
       }
     });
