@@ -31,6 +31,10 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
   final StreamController<SlideControllerAction> slideActionConroller =
       StreamController();
 
+  void onShowcaseInit() {
+    print('showcase initialized successfully');
+  }
+
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.bodyText1.copyWith(
@@ -51,6 +55,7 @@ class _BubbleShowcaseDemoWidget extends StatelessWidget {
       showCloseButton: false,
       enabledClickOnOverlayToNextSlide: false,
       doNotReopenOnClose: false,
+      onInit: onShowcaseInit,
     );
   }
 
